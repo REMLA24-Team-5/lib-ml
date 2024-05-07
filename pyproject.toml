@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "lib-ml"
+version = "v0.1.0"
+description = "Contains the pre-processing logic for data that is used for training or queries."
+authors = ["Saga <sagakudungur@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+scikit-learn = "^1.4.2"
+
+# Issue between poetry and tensorflow metadata since >=2.11
+# This is a temporary workaround
+# related to https://github.com/python-poetry/poetry/issues/8271
+tensorflow-io-gcs-filesystem = "0.31.0"
+tensorflow = "2.15.0"
+tensorflow-intel = {version="^2.15.0", platform = "win32"}
+
+gdown = "^5.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
