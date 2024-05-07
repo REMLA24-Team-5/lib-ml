@@ -4,6 +4,9 @@ version = "v0.1.0"
 description = "Contains the pre-processing logic for data that is used for training or queries."
 authors = ["Saga <sagakudungur@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "lib-ml" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
