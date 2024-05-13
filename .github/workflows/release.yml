@@ -2,7 +2,8 @@
 name: Release
 on:
   push:
-    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+    branches:
+      - main
 
 jobs:
   tag-and-release:
@@ -11,10 +12,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Parse version info from tag
         run: |
-          # GITHUB_REF is like refs/tags/v2.3.5, so strip the first 11 chars
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's/refs\/tags\/v//' -e 's/\./\\./g')
-          echo "version=$VERSION" >> $GITHUB_ENV
-          
           #get highest tag number
           VERSION=`git describe --abbrev=0 --tags`
           #replace . with space so can split into an array
@@ -45,6 +42,11 @@ jobs:
           git status # This is just to check if the git config worked
           git pull origin main # In case any changes were made since checkout
           git add pyproject.toml # Add dependency version changes
-          git commit -m "Update project version to ${{ env.new_tag }} [skip ci]"
+          git commit -m "Update library version to ${{ env.new_tag }} [skip ci]"
           git tag ${{ env.new_tag }} -m "Release ${{ env.new_tag }}"
           git push --set-upstream origin $(git branch --show-current) --follow-tags
+          
+          # Create a GitHub release from latest tag
+          gh release create ${{ env.new_tag }} \
+            --title "${{ env.new_tag }}" \
+            --generate-notes
