@@ -1,24 +1,12 @@
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import gdown
 
 class Preprocessing:
     """
     Class to preprocess URL datasets
     """
-    def __init__(self):
-
-        gdown.download_folder('https://drive.google.com/drive/folders/1_NobSEMZS8jogSAEZ9ZLBUTemPiASJRg',
-                              output="data", quiet=False)
-
-        train = [line.strip() for line in open('data/train.txt', "r", encoding="utf-8").readlines()[1:]]
-        x_train = [line.split("\t")[1] for line in train]
-        y_train = [line.split("\t")[0] for line in train]
-        test = [line.strip() for line in open('data/test.txt', "r", encoding="utf-8").readlines()]
-        x_test = [line.split("\t")[1] for line in test]
-        val = [line.strip() for line in open('data/val.txt', "r", encoding="utf-8").readlines()]
-        x_val = [line.split("\t")[1] for line in val]
+    def __init__(self, x_train, y_train, x_test, x_val):
 
         # We mark this line as nosec to let Bandit know that this token is not a password token
         self.tokenizer = Tokenizer(lower=True, char_level=True, oov_token='-n-')  # nosec
