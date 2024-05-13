@@ -1,18 +1,30 @@
-# Only trigger on tags
+# Only trigger on pr merges
 name: Release
 on:
   push:
     branches:
       - main
-
 jobs:
   tag-and-release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        name: Checkout repository
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Configure Git Credentials
+        run: |
+          git config user.name "GitHub Actions [bot]"
+          git config user.email "actions@github.com"
       - name: Parse version info from tag
         run: |
           #get highest tag number
+          git status # This is just to check if the git checkout worked
+          echo "git status"
+          git pull # In case any changes were made since checkout
           VERSION=`git describe --abbrev=0 --tags`
           #replace . with space so can split into an array
           VERSION_BITS=(${VERSION//./ })
@@ -39,8 +51,6 @@ jobs:
 
       - name: Commit and push new version
         run: |
-          git status # This is just to check if the git config worked
-          git pull origin main # In case any changes were made since checkout
           git add pyproject.toml # Add dependency version changes
           git commit -m "Update library version to ${{ env.new_tag }} [skip ci]"
           git tag ${{ env.new_tag }} -m "Release ${{ env.new_tag }}"
@@ -50,3 +60,5 @@ jobs:
           gh release create ${{ env.new_tag }} \
             --title "${{ env.new_tag }}" \
             --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
